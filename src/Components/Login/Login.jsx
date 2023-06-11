@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import * as Property from "./Property";
-import { LOGIN_API_URL, SIGNUP_API_URL } from "./utils";
+import { LOGIN_API_URL, SIGNUP_API_URL } from "../../utils";
 
 function Login() {
   const [signIn, toggle] = useState(true);
