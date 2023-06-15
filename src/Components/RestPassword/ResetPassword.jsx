@@ -88,7 +88,7 @@ function ResetPassword() {
 
   const handleModalButtonClick = () => {
     setOpenModal(false);
-    navigate("/"); // Replace "/desired-page" with the desired page URL after password reset
+    navigate("/"); 
   };
 
   return (
