@@ -15,6 +15,8 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid #999',
     padding: theme.spacing(2),
     textAlign: 'center',
+    width: '80%',
+    maxWidth: 600,
   },
   close: {
     position: 'absolute',
@@ -22,9 +24,12 @@ const useStyles = makeStyles((theme) => ({
     right: theme.spacing(1),
     cursor: 'pointer',
   },
+  header: {
+    marginBottom: theme.spacing(2),
+  },
 }));
 
-function AlertModal({ message, isOpen, onClose, onButtonClick }) {
+function AlertModal({ header, message, isOpen, onClose, onButtonClick }) {
   const classes = useStyles();
 
   const handleButtonClick = () => {
@@ -36,8 +41,17 @@ function AlertModal({ message, isOpen, onClose, onButtonClick }) {
   return (
     <Modal className={classes.modal} open={isOpen} onClose={onClose}>
       <div className={classes.modalContent}>
-        <Typography variant="h6" gutterBottom>{message}</Typography>
-        <span className={classes.close} onClick={onClose}>&times;</span>
+        {header && (
+          <Typography variant="h6" className={classes.header}>
+            {header}
+          </Typography>
+        )}
+        <Typography variant="h6" gutterBottom>
+          {message}
+        </Typography>
+        <span className={classes.close} onClick={onClose}>
+          &times;
+        </span>
         <Button onClick={handleButtonClick} variant="contained" color="primary">
           OK
         </Button>

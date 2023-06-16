@@ -12,19 +12,15 @@ import {
 } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { GET_PROFILE_URL, LOGIN_API_URL, SIGNUP_API_URL } from "../../utils";
+import {  LOGIN_OTP_API_URL, SIGNUP_API_URL } from "../../utils";
 import useStyles from "./LoginStyles";
 
-
-function Login() {
+function LoginViaOTP() {
   const classes = useStyles();
   const navigate = useNavigate();
   const [signIn, toggle] = useState(true);
   const [loginData, setLoginData] = useState({
-    email: "",
-    password: "",
     phoneNumber: "",
-    name: "",
   });
   const [loader, setLoader] = useState(false);
   const [error, setError] = useState("");
@@ -37,52 +33,35 @@ function Login() {
       [name]: value,
     }));
   };
-  const handleProfile = () => {
-    const token = sessionStorage.getItem("token");
-    axios
-        .get(GET_PROFILE_URL, { headers: { "Authorization": `Bearer ${token}` } })
-        .then((response) => {
-          setSnackbarOpen(true);
-          setTimeout(() => {
-            navigate("/home");
-          }, 50);
-        })
-        .catch((error) => {
-            console.error("Profile", error);
-        })
-        .finally(()=>{
-          setLoader(false)
-        })
-};
 
-  const loginUser = async () => {
+  const loginUserViaOtp = async () => {
     try {
-      const response = await axios.post(LOGIN_API_URL, loginData);
+      const response = await axios.post(LOGIN_OTP_API_URL, loginData);
       if (response.data.success) {
-        sessionStorage.setItem("loggedIn", "true");
-        sessionStorage.setItem("user", JSON.stringify(response.data.user));
-        sessionStorage.setItem("token", response.data.token);
+        setSnackbarOpen(true);
         setTimeout(() => {
-          handleProfile()
-        }, 10);
+          navigate("/verify-otp");
+        }, 2000);
       } else {
         setError("Bad Credentials");
       }
     } catch (error) {
       console.error("Error:", error);
       setError("An error occurred. Please try again.");
+    } finally {
+      setLoader(false);
     }
   };
-  
-  const handleLogin = async (event) => {
+
+  const handleLoginViaOtp = async (event) => {
     event.preventDefault();
-    if (loginData.email.trim() === "" || loginData.password.trim() === "") {
-      setError("Please enter your email and password.");
+    if (loginData.number === "") {
+      setError("Please enter your Phone Number.");
       return;
     }
     setError("");
     setLoader(true);
-    await loginUser();
+    await loginUserViaOtp();
   };
 
   const signUp = (event) => {
@@ -124,7 +103,10 @@ function Login() {
           <Typography component="h1" variant="h5">
             {signIn ? "Sign In" : "Create Account"}
           </Typography>
-          <form className={classes.form} onSubmit={signIn ? handleLogin : signUp}>
+          <form
+            className={classes.form}
+            onSubmit={signIn ? handleLoginViaOtp : signUp}
+          >
             {error && (
               <Typography variant="body2" className={classes.errorText}>
                 {error}
@@ -136,32 +118,16 @@ function Login() {
                   <TextField
                     variant="outlined"
                     fullWidth
-                    label="Email"
-                    type="email"
-                    name="email"
-                    value={loginData.email}
+                    label="Phone Number"
+                    type="number"
+                    name="phoneNumber"
+                    value={loginData.phoneNumber}
                     onChange={handleChange}
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    label="Password"
-                    type="password"
-                    name="password"
-                    value={loginData.password}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Link href="/forgetPassword" variant="body2">
-                    Forgot your password?
-                  </Link>
-                </Grid>
-                <Grid item xs={12}>
-                  <Link href="/login-otp" variant="body2">
-                    Login Via OTP?
+                  <Link href="/" variant="body2">
+                    Login Via Email?
                   </Link>
                 </Grid>
                 <Grid item xs={12}>
@@ -216,8 +182,8 @@ function Login() {
                     variant="outlined"
                     fullWidth
                     label="Phone Number"
-                    name="phoneNumber"
-                    value={loginData.phoneNumber}
+                    name="number"
+                    value={loginData.number}
                     onChange={handleChange}
                   />
                 </Grid>
@@ -242,7 +208,9 @@ function Login() {
                 color="primary"
                 onClick={() => toggle(!signIn)}
               >
-                {signIn ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
+                {signIn
+                  ? "Don't have an account? Sign Up"
+                  : "Already have an account? Sign In"}
               </Button>
             </Grid>
           </Grid>
@@ -252,4 +220,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginViaOTP;
