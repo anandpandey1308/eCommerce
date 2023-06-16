@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -10,14 +10,14 @@ import {
   Badge,
   InputBase,
 } from "@material-ui/core";
-import { Notifications, Search } from "@material-ui/icons";
+import { ShoppingCart, Search } from "@material-ui/icons";
 import { useStyles } from "./AppBarStyle";
 import { useNavigate } from "react-router-dom";
 import user1 from "../../../src/user.png";
 
-const AppBarComponent = () => {
+const AppBarComponent = ({ handleSearch, cartItemCount }) => {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
 
   const handleMenuOpen = (event) => {
@@ -36,7 +36,7 @@ const AppBarComponent = () => {
   const userString = sessionStorage.getItem("user");
   const user = JSON.parse(userString);
   const userName = user?.name;
-  console.log("USER NAME", userName)
+
   return (
     <div className={classes.root}>
       <AppBar position="static" className={classes.appBar}>
@@ -55,15 +55,12 @@ const AppBarComponent = () => {
                 input: classes.inputInput,
               }}
               inputProps={{ "aria-label": "search" }}
+              onChange={(e) => handleSearch(e.target.value)}
             />
           </div>
-          <IconButton
-            color="inherit"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-          >
-            <Badge badgeContent={3} color="secondary">
-              <Notifications />
+          <IconButton color="inherit" aria-label="cart">
+            <Badge badgeContent={cartItemCount} color="secondary">
+              <ShoppingCart />
             </Badge>
           </IconButton>
 
@@ -73,13 +70,9 @@ const AppBarComponent = () => {
             aria-controls="menu-appbar"
             aria-haspopup="true"
           >
-            <Avatar
-              alt="User Avatar"
-              src={user1}
-              className={classes.avatar}
-            />
+            <Avatar alt="User Avatar" src={user1} className={classes.avatar} />
           </IconButton>
-          {userName && <Typography variant="body2">{userName}</Typography>} {/* Render the user's name if available */}
+          {userName && <Typography variant="body2">{userName}</Typography>}
           <Menu
             id="menu-appbar"
             anchorEl={anchorEl}

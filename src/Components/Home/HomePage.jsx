@@ -1,29 +1,53 @@
-import { Button } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import React from "react";
-import { GET_PROFILE_URL } from "../../utils";
+import ProductCard from "../ProductCard/ProductCard";
+import { ALL_PRODUCTS } from "../../utils";
+import "./HomePage.css";
 import AppBarComponent from "../AppBar/AppBar";
 
-function HomePage() {
-  const handleProfile = (e) => {
-    e.preventDefault();
-    const token = sessionStorage.getItem("token");
-    axios
-        .get(GET_PROFILE_URL, { headers: { "Authorization": `Bearer ${token}` } })
-        .then((response) => {
-            console.log("Profile", response);
-        })
-        .catch((error) => {
-            console.error("Profile", error);
-        });
-};
+function HomePage({ cartItemCount }) {
+  const [products, setProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(ALL_PRODUCTS);
+        setProducts(response.data.product);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
   return (
-    <div>
-      <AppBarComponent/>
-      <h1>Welcome to the Home Page!</h1>
-      <p>This is the content of the home page.</p>
-      <Button onClick={(e)=>handleProfile(e)}>CLick Me</Button>
-    </div>
+    <>
+      <AppBarComponent
+        handleSearch={handleSearch}
+        cartItemCount={cartItemCount} // Pass the cartItemCount as a prop
+      />
+      <div className="container">
+        <h1>Welcome to the Home Page!</h1>
+        <div className="card-container">
+          {products
+            .filter((product) =>
+              product.name.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+              />
+            ))}
+        </div>
+      </div>
+    </>
   );
 }
 

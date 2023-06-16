@@ -12,3 +12,5 @@ export const LOGIN_OTP_API_URL =
   "https://e-commerce-production-76e7.up.railway.app/api/v1/auth/send-otp";
 export const VERIFY_OTP_API_URL =
   "https://e-commerce-production-76e7.up.railway.app/api/v1/auth//verify-otp-login";
+export const ALL_PRODUCTS =
+  "https://e-commerce-production-76e7.up.railway.app/api/v1/product/";
